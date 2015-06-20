@@ -1,101 +1,122 @@
+var msg = new Object;
+describe("Contacts Test Suite", function () {
 
-describe("Contacts Test Suite", function(){
+    //var request = require('request');
+    var request = require('C:/Program Files/nodejs/node_modules/npm/node_modules/request')
+    var base_url = "http://localhost:3000";
+    var contacts_url = base_url + "/contacts";
 
-	//var request = require('request');
-	var request = require('C:/Program Files/nodejs/node_modules/npm/node_modules/request')
-	var base_url = "http://localhost:3000";
-	var contacts_url = base_url + "/contacts";
+    describe("hello world", function () {
 
-	describe("hello world", function(){
+        xit("hello world", function (done) {
 
-		it("hello world",function(done){
-		    
-		    request.get(base_url, function(error, response, body){
+            request.get(base_url, function (error, response, body) {
 
-				expect(response.statusCode).toBe(200);
-				//expect(body).toBe("Hello World");
+                expect(response.statusCode).toBe(200);
+                //expect(body).toBe("Hello World");
 
-				done();
+                done();
+            });
+        });
+
+    });
+
+    describe("create update contact", function () {
+        var idCreated;
+
+        it("should create contact", function (done) {
+
+            var contact = new Object();
+            contact.firstName = "jagan";
+            contact.lastName = "peri";
+            contact.phone = "23002300";
+            contact.msg = new Array();
+            //console.log(JSON.stringify(contact));
+
+            request.post({
+                url: contacts_url,
+                body: contact,
+                json: true
+            },
+		    function (error, response, body) {
+
+		        expect(response.statusCode).toBe(200);
+		        //console.log(body);
+		        idCreated = body;
+		        done();
 		    });
-		});
+        });
 
-	});
+        it("should retrieve contact", function (done) {
 
-	describe("create update contact", function(){
-		var idCreated;
+            request.get({
+                url: contacts_url + "/" + idCreated,
+                json: true
+            },
+		    		    function (error, response, body) {
+		    		        //console.log(body);
+		    		        expect(response.statusCode).toBe(200);
+		    		        //console.log(body);
+		    		        expect(body.firstName).toBe("jagan");
+		    		        done();
+		    		    });
+        });
+        it("should update contact", function (done) {
 
-		it("should create contact",function(done){
+            var updatedContact = new Object();
+            updatedContact.firstName = "jagan-updated";
+            request.put({
+                url: contacts_url + "/" + idCreated,
+                body: updatedContact,
+                json: true
+            },
+		    		    function (error, response, body) {
 
-			var contact = new Object();
-			contact.firstName = "jagan";
-			contact.lastName = "peri";
-			contact.phone = "23002300";
+		    		        expect(response.statusCode).toBe(200);
+		    		        console.log(body);
+		    		        expect(body.firstName).toBe("jagan-updated");
+		    		        expect(body.phone).toBe("23002300");
+		    		        done();
+		    		    });
+        });
+    });
 
-			//console.log(JSON.stringify(contact));
-		    
-		    request.post({url: contacts_url,
-		    			  body: contact,
-		    			  json: true
-		    			}, 
-		    		    function(error, response, body){
+    //TODO: Fill out the test case below that posts a message to a contact
+    // and retrieves it back.
+    describe("post and get message to contact", function () {
 
-							expect(response.statusCode).toBe(200);
-							console.log(body);
-							idCreated = body;
-							done();
-					    });
-		});
+        it("should post message to contact", function (done) {
+            //TODO: Write your test case here.
+            var contactNo = 0;
+            var message = new Object();
+            var m = 'sowjanya is a good girl';
+            message.msg = m;
+            request.post({
+                url: contacts_url + "/" + contactNo,
+                body: message,
+                json: true
+            },
+            function (error, response, body) {
+                //console.log(body);
+                expect(response.statusCode).toBe(200);
+                done();
+            });
 
-		xit("should retrieve contact",function(done){
+        });
 
-			request.get({
-							url: contacts_url + "/" + idCreated,
-							json: true
-						},
-		    		    function(error, response, body){
+        it("should get message for contact", function (done) {
+            //TODO: Write your test case here.
+            var contactNo = 0;
+            request.get({
+                url: contacts_url + "/message/" + contactNo,
+                json: true
+            },
+            function (error, response, body) {
+                expect(response.statusCode).toBe(200);
+                expect(body).toBe('sowjanya is a good girl');
+                done();
+            });
 
-							expect(response.statusCode).toBe(200);
-							console.log(body);
-							expect(body.firstName).toBe("jagan");
-							done();
-					    });
-		});
-		xit("should update contact",function(done){
-
-			var updatedContact = new Object();
-			updatedContact.firstName = "jagan-updated";
-			request.put({
-							url: contacts_url + "/" + idCreated,
-							body: updatedContact,
-							json: true
-						},
-		    		    function(error, response, body){
-
-							expect(response.statusCode).toBe(200);
-							console.log(body);
-							expect(body.firstName).toBe("jagan-updated");
-							expect(body.phone).toBe("23002300");
-							done();
-					    });
-		});
-	});
-
-	//TODO: Fill out the test case below that posts a message to a contact
-	// and retrieves it back.
-	describe("post and get message to contact", function(){
-
-		xit("should post message to contact", function(done){
-			//TODO: Write your test case here.
-			done();
-
-		});
-
-		xit("should get message for contact", function(done){
-			//TODO: Write your test case here.
-			done();
-
-		});
-
-	});
-
+        });
+    });
 });
